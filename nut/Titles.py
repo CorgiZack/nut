@@ -42,7 +42,7 @@ def data(region=None, language=None):
 				except BaseException:
 					pass
 
-				url = 'https://raw.githubusercontent.com/blawar/nut/master/titledb/%s.%s.json' % (region, language)
+				url = 'http://tinfoil.media/repo/db/%s.%s.json' % (region, language)
 				# https://raw.githubusercontent.com/blawar/nut/master/titledb/HK.zh.json
 				nut.downloadFile(url, filePath)
 				if os.path.isfile(filePath):
@@ -85,17 +85,6 @@ def getNsuid(id, region, language):
 
 	map[str(id)] = title
 	return title
-
-def getTitleId(id, region, language):
-	id = id.upper()
-
-	map = data(region, language)
-
-	for t in map:
-		if map[t].id == id:
-			return map[t]
-
-	return None
 
 def hasNsuid(id, region, language):
 	id = int(id)
@@ -310,7 +299,8 @@ def saveTitlesJson(newTitles, fileName='titledb/titles.json'):
 				if title.rightsId:
 					k.setId(title.rightsId)
 			j[k.nsuId] = k.exportDict(True)
-		nut.writeJson(j, fileName)
+		with open(fileName, 'w') as outfile:
+			json.dump(j, outfile, indent=4)
 	except BaseException:
 		confLock.release()
 		raise
@@ -328,7 +318,8 @@ def save(fileName='titledb/titles.json', full=True):
 
 			j[k.id] = k.exportDict(full=full)
 
-		nut.writeJson(j, fileName)
+		with open(fileName, 'w') as outfile:
+			json.dump(j, outfile, indent=4)
 	except BaseException:
 		confLock.release()
 		raise
